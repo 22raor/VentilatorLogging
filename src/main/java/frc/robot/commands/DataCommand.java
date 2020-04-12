@@ -7,8 +7,11 @@
 
 package frc.robot.commands;
 
+import java.io.IOException;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
+import frc.robot.server.ServerListenerThread;
 
 public class DataCommand extends CommandBase {
   /**
@@ -20,16 +23,29 @@ public class DataCommand extends CommandBase {
   }
 
   // Called when the command is initially scheduled.
+  public ServerListenerThread serverThread;
   @Override
   public void initialize() {
+    		
+		System.out.println("Server starting...");
+
+
+
+		try {
+			serverThread = new ServerListenerThread(2717);
+			serverThread.start();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println(RobotContainer.dataSubsystem.getAnalogData(1));
-    System.out.println(RobotContainer.dataSubsystem.getCanMessage());
-
+    double a = RobotContainer.dataSubsystem.getAnalogData(1);
+    String b = RobotContainer.dataSubsystem.getCanMessage();
+   serverThread.setHtml("<html><head><title>Test</title></head><body><h1>" + "Analog: " + a + " CAN: "+ b +"</h1></body></html>");
   }
 
   // Called once the command ends or is interrupted.
